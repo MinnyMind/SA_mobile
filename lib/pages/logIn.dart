@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-class Playlist extends StatelessWidget { //หน้า Playlist ห้ามแก้ชื่อ class
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
