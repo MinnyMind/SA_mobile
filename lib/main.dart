@@ -21,9 +21,9 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> _screens = [
     MyLearning(),
     Playlist(),
+    AllCourse(),
     PlaylistInfo(),
     PlaylistEdit(),
-    AllCourse(),
   ];
 
   void _onNavbarTap(int index) {
