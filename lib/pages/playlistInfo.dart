@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spaceship_academy/Widgets/courseItem.dart';
 
 class PlaylistInfo extends StatelessWidget {
   const PlaylistInfo({super.key});
@@ -9,7 +10,7 @@ class PlaylistInfo extends StatelessWidget {
       {
         "name": "Python",
         "description": "For beginner python",
-        "image": "assets/images/python.png"
+        "image": "assets/images/pythonlogo.png"
       },
       {
         "name": "Java",
@@ -19,7 +20,7 @@ class PlaylistInfo extends StatelessWidget {
       {
         "name": "C++",
         "description": "Master the basics and advanced applications of C++ programming.",
-        "image": "assets/images/cpp.png"
+        "image": "assets/images/c++.png"
       },
       {
         "name": "Mongo DB",
@@ -57,28 +58,15 @@ class PlaylistInfo extends StatelessWidget {
         itemCount: programmingList.length,
         itemBuilder: (context, index) {
           final item = programmingList[index];
-          return Card(
-            color: Colors.black26, // ให้เข้ากับ theme ของแอป
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: ListTile(
-              // leading: Image.asset(
-              //   item["image"]!,
-              //   width: 50,
-              //   height: 50,
-              //   fit: BoxFit.cover,
-              // ),
-              title: Text(
-                item["name"]!,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white, // ให้ข้อความเป็นสีขาว
-                ),
-              ),
-              subtitle: Text(
-                item["description"]!,
-                style: const TextStyle(color: Colors.white70),
-              ),
-              trailing: const Icon(Icons.more_vert, color: Colors.white),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: CourseItem(
+              imageUrl: item["image"]!,
+              courseName: item["name"]!,
+              courseDescription: item["description"]!,
+              onMorePressed: () {
+                
+              },
             ),
           );
         },
