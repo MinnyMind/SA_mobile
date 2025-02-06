@@ -34,10 +34,25 @@ class PlaylistInfo extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("List Programming"),
-        backgroundColor: const Color.fromRGBO(20, 18, 24, 1), // ให้ตรงกับ theme
-      ),
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              
+            },
+          ),
+          title: Row(
+            children: [
+              const Spacer(), // เพิ่มช่องว่าง
+              const Text(
+                "List Programming",
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          backgroundColor: const Color.fromRGBO(20, 18, 24, 1), // ให้ตรงกับ theme
+        ),
+
       body: ListView.builder(
         itemCount: programmingList.length,
         itemBuilder: (context, index) {
