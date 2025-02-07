@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
     PlaylistInfo(),
     PlaylistEdit(),
     Playlist(),
-    AllCourse(),
+
   ];
 
   void _onNavbarTap(int index) {
