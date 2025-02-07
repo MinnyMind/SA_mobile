@@ -21,10 +21,10 @@ class Mylearningitem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
+            child: Image.asset(
               imagePath,
-              width: 80,
-              height: 80,
+              width: 100,
+              height: 100,
               fit: BoxFit.cover,
             ),
           ),

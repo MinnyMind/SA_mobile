@@ -7,10 +7,19 @@ class MyLearning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Image.asset('assets/images/logoSA.png', 
+          height: 60,),
+        ),
+        backgroundColor: Color.fromRGBO(20, 18, 24, 1),
+      ),
       body: Center(
-      Image(
-        image: AssetImage('assets/images/'),
-      )
+      child: Mylearningitem(imagePath: 'assets/images/littleGirl.jpg')
+
+      ),
+    );
     
   }
 }

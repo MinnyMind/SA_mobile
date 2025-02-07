@@ -22,10 +22,11 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     MyLearning(),
-    PlaylistInfo(),
-    PlaylistEdit(),
-    Playlist(),
     AllCourse(),
+    PlaylistInfo(),
+    Playlist(),
+    PlaylistEdit(),
+    
   ];
 
   void _onNavbarTap(int index) {
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor:
-            Color.fromRGBO(20, 18, 24, 1),
+        Color.fromRGBO(20, 18, 24, 1),
         textTheme: GoogleFonts.interTextTheme(),
       ),
       home: _selectedIndex == 5
