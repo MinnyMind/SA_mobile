@@ -10,11 +10,11 @@ class PlaylistEdit extends StatefulWidget {
 
 class _PlaylistEditState extends State<PlaylistEdit> {
   int _currentIndex = 3;
-  TextEditingController _titleController =
+  final TextEditingController _titleController =
       TextEditingController(text: "List Programming");
 
   // 🔹 รายการ Playlist ที่สามารถลบได้
-  List<Map<String, String>> _playlistItems = [
+  final List<Map<String, String>> _playlistItems = [
     {
       "name": "Python",
       "description": "For beginner python",

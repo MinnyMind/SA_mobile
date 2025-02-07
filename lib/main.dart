@@ -24,12 +24,8 @@ class _MyAppState extends State<MyApp> {
     MyLearning(),
     PlaylistInfo(),
     PlaylistEdit(),
-    Playlist(),
+   // Playlist(),
     AllCourse(),
-    PlaylistInfo(),
-    Playlist(),
-    PlaylistEdit(),
-    
   ];
 
   void _onNavbarTap(int index) {
@@ -44,7 +40,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor:
-        Color.fromRGBO(20, 18, 24, 1),
+       Color.fromRGBO(20, 18, 24, 1),
         textTheme: GoogleFonts.interTextTheme(),
       ),
       home: _selectedIndex == 5
