@@ -16,12 +16,12 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-ิีbuildscript{
-    repositories{
+buildscript {
+    repositories {
         google()
         mavenCentral()
     }
-    dependensies{
-        classpath 'com.android.tools.build:grandle:8.2.1'
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1' 
     }
 }
