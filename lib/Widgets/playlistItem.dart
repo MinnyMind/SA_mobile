@@ -5,10 +5,10 @@ class Playlistitem extends StatelessWidget {
   final String playlistName;
 
   const Playlistitem({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.playlistName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
