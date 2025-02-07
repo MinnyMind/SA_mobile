@@ -12,6 +12,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -21,9 +23,9 @@ class _MyAppState extends State<MyApp> {
   final List<Widget> _screens = [
     MyLearning(),
     PlaylistInfo(),
-    AllCourse(),
-    Playlist(),
     PlaylistEdit(),
+    Playlist(),
+
   ];
 
   void _onNavbarTap(int index) {
