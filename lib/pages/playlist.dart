@@ -30,15 +30,15 @@ class Playlist extends StatelessWidget {
           ),
           _buildPlaylistItem(
             'List Marketing',
-            'https://via.placeholder.com/80', // Replace with actual image URL
+            'assets/Images/marketing.png', // Replace with actual image URL
           ),
           _buildPlaylistItem(
             'List Math',
-            'https://via.placeholder.com/80', // Replace with actual image URL
+            'assets/Images/math.png', // Replace with actual image URL
           ),
           _buildPlaylistItem(
             'List Science',
-            'https://via.placeholder.com/80', // Replace with actual image URL
+            'assets/Images/science.png', // Replace with actual image URL
           ),
         ],
       ),
