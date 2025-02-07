@@ -22,7 +22,7 @@ class Playlistitem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
+            child: Image.asset(
               imagePath,
               width: 60,
               height: 60,

@@ -8,11 +8,9 @@ class MyLearning extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Image.asset('assets/images/logoSA.png', 
-          height: 60,),
-        ),
+        title: Image.asset('assets/images/logoSA.png', 
+        height: 70,),
+        
         backgroundColor: Color.fromRGBO(20, 18, 24, 1),
       ),
       body: Center(

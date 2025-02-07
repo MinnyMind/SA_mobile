@@ -59,7 +59,7 @@ class Playlist extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(
+            child: Image.asset(
               imageUrl,
               width: 80,
               height: 80,
