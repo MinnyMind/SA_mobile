@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/courseItem.dart';
 import 'package:spaceship_academy/pages/playlist.dart';
 import 'package:spaceship_academy/pages/playlistEdit.dart';
+import 'package:spaceship_academy/widgets/navbar.dart';
 
-
-class PlaylistInfo extends StatelessWidget { //หน้า playlistInfo แก้ได้หมดยกเว้นชื่อ class
-
+class PlaylistInfo extends StatelessWidget {
   const PlaylistInfo({super.key});
 
   @override
@@ -38,85 +37,97 @@ class PlaylistInfo extends StatelessWidget { //หน้า playlistInfo แก�
       }
     ];
 
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const Playlist()));
-            },
-          ),
-          title: const Text(
-            "List Programming",
-            style: TextStyle(color: Colors.white,),
-            
-          ),
-          // centerTitle: true, // จัดกึ่งกลาง title
-          backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaylistEdit()));
-              },
-              icon: const Icon(
-                Icons.more_vert,
-                color: Colors.white70,
-              ),
-            ),
-          ],
-        ),
+    final List<String> playlists = ["Programming", "Marketing", "Math"];
 
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          "List Programming",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaylistEdit()));
+            },
+            icon: const Icon(
+              Icons.more_vert,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
       body: ListView.builder(
         itemCount: programmingList.length,
         itemBuilder: (context, index) {
           final item = programmingList[index];
-          final GlobalKey key = GlobalKey(); // สร้าง key สำหรับแต่ละ item
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: CourseItem(
-              key: key,
               imageUrl: item["image"]!,
               courseName: item["name"]!,
               courseDescription: item["description"]!,
               onMorePressed: () {
-                RenderBox renderBox = context.findRenderObject() as RenderBox;
-                Offset offset = renderBox.localToGlobal(Offset.zero);
-
-                showMenu(
+                showModalBottomSheet(
                   context: context,
-                  position: RelativeRect.fromLTRB(
-                    offset.dx + renderBox.size.width - 40, // ตำแหน่งชิดขวา
-                    offset.dy + renderBox.size.height / 2, // กึ่งกลางไอเท็ม
-                    offset.dx + renderBox.size.width,
-                    offset.dy + renderBox.size.height,
+                  backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  items: [
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.playlist_add),
-                        title: const Text("Add to playlist..."),
-                        onTap: () {},
-                      ),
-                    ),
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.remove_circle),
-                        title: const Text("Remove from ..."),
-                        onTap: () {},
-                      ),
-                    ),
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.archive),
-                        title: const Text("Archived Course"),
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
+                  builder: (context) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Add to playlist",
+                                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                // const SizedBox(width: 15), 
+                                const Text(
+                                  "+",
+                                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                              const SizedBox(height: 10),
+                              ...playlists.map((playlist) {
+                                return CheckboxListTile(
+                                  title: Text(
+                                    playlist,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  value: false, // ค่าเริ่มต้น
+                                  onChanged: (bool? value) {
+                                    setState(() {});
+                                  },
+                                  activeColor: Colors.purpleAccent,
+                                  checkColor: Colors.black,
+                                  controlAffinity: ListTileControlAffinity.leading,
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
               },
-
             ),
           );
         },
