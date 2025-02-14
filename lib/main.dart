@@ -12,6 +12,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -20,10 +22,10 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     MyLearning(),
-    Playlist(),
     PlaylistInfo(),
     PlaylistEdit(),
-    AllCourse(),
+    Playlist(),
+
   ];
 
   void _onNavbarTap(int index) {
@@ -38,7 +40,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor:
-            Color.fromRGBO(20, 18, 24, 1),
+       Color.fromRGBO(20, 18, 24, 1),
         textTheme: GoogleFonts.interTextTheme(),
       ),
       home: _selectedIndex == 5
