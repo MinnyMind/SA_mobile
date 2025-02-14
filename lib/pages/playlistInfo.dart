@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/courseItem.dart';
+import 'package:spaceship_academy/pages/playlist.dart';
+import 'package:spaceship_academy/pages/playlistEdit.dart';
 
 
 class PlaylistInfo extends StatelessWidget { //หน้า playlistInfo แก้ได้หมดยกเว้นชื่อ class
@@ -40,7 +42,9 @@ class PlaylistInfo extends StatelessWidget { //หน้า playlistInfo แก�
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const Playlist()));
+            },
           ),
           title: const Text(
             "List Programming",
@@ -51,7 +55,9 @@ class PlaylistInfo extends StatelessWidget { //หน้า playlistInfo แก�
           backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaylistEdit()));
+              },
               icon: const Icon(
                 Icons.more_vert,
                 color: Colors.white70,
