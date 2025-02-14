@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-    debugShowCheckedModeBanner: false, 
-  ));
-}
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
