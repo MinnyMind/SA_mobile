@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 void main() {
   runApp(MaterialApp(
     home: LoginScreen(),
-    debugShowCheckedModeBanner: false, 
+    debugShowCheckedModeBanner: false,
   ));
 }
 
@@ -16,6 +21,50 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String responseData = "Press LOGIN to fetch data";
+  final storage = FlutterSecureStorage();
+
+  Future<void> fetchData() async {
+
+    final url = Uri.parse('http://150.95.25.61:7779/api/auth/getAuth');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'X-TTT': '4f781ebba1a655430fb6db734c2c156f',
+    };
+
+    final body = jsonEncode({'user': usernameController.text, 'password': passwordController.text});
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          Map<String, dynamic> responseData = jsonDecode(response.body);
+          String? token = responseData['token'];
+          print(token);
+
+          if( token != null ){
+           
+          }
+        });
+      } else {
+        setState(() {
+          responseData = 'Error: ${response.statusCode}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        responseData = 'Failed to connect';
+      });
+    }
+  }
+
   bool _obscurePassword = true;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -36,13 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 60),
             Container(
-              width: double.infinity, 
+              width: double.infinity,
               constraints: const BoxConstraints(
                 maxWidth: 270,
                 minHeight: 50,
               ),
               child: TextField(
-                controller: _usernameController,
+                controller: usernameController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   filled: true,
@@ -58,37 +107,39 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 20),
             Container(
-              width: double.infinity, 
+              width: double.infinity,
               constraints: const BoxConstraints(
                 maxWidth: 270,
                 minHeight: 50,
               ),
               child: TextField(
-              controller: _passwordController,
-              obscureText: _obscurePassword,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey[900],
-                hintText: 'Password',
-                hintStyle: const TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.white,
+                controller: passwordController,
+                obscureText: _obscurePassword,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey[900],
+                  hintText: 'Password',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
               ),
-            ),
             ),
             const SizedBox(height: 30),
             OutlinedButton(
@@ -97,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 40),
               ),
-              onPressed: () {},
+              onPressed: fetchData,
               child: const Text(
                 'LOGIN',
                 style: TextStyle(
@@ -128,4 +179,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+@override
+Widget build(BuildContext context) {
+  // TODO: implement build
+  throw UnimplementedError();
 }
