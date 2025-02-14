@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
        Color.fromRGBO(20, 18, 24, 1),
         textTheme: GoogleFonts.interTextTheme(),
       ),
-      home: _selectedIndex == 5
+      home: _selectedIndex == 6
           ? LoginScreen()
           : Scaffold(
               body: _screens[_selectedIndex],

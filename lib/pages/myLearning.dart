@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spaceship_academy/pages/allCourse.dart';
 import '../Widgets/myLearningItem.dart';
 
 class MyLearning extends StatelessWidget {
@@ -26,6 +27,7 @@ class MyLearning extends StatelessWidget {
               'assets/Images/science.png',
               ],
               menu: "All Courses",
+             
             ),
              Mylearningitem(
               imagePath: [
