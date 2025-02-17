@@ -22,11 +22,9 @@ class Playlist extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyLearning()),
-            );
+
             },
+          // onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('ALL PLAYLIST', style: TextStyle(color: Colors.white)),
       ),
