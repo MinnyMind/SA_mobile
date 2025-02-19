@@ -12,12 +12,14 @@ class PlaylistInfo extends StatefulWidget {
 
 class _PlaylistInfoState extends State<PlaylistInfo> {
   List courses = [];
+  List<String> playlists = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     fetchCourses();
+    fetchPlaylist();
   }
 
   Future<void> fetchCourses() async {
@@ -52,8 +54,36 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
     }
   }
 
+  Future<void> fetchPlaylist() async {
+    final dio = Dio();
+    try {
+      print("🚀 Fetching playlists...");
+      final response = await dio.get(
+        "http://localhost:7501/api/playlists",
+        queryParameters: {
+          "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
+        },
+        options: Options(headers: {"Content-Type": "application/json"}),
+      );
 
-final List<String> playlists = ["Programming", "Marketing", "Math"];
+      setState(() {
+        playlists = List<String>.from(
+          response.data['data'].map((item) => item['play_title'] as String),
+        );
+        isLoading = false;
+      });
+    } catch (e) {
+      if (e is DioException) {
+        print("❌ Dio Error: ${e.message}");
+      } else {
+        print("❌ Unknown Error: $e");
+      }
+      setState(() => isLoading = false);
+    }
+  }
+
+
+// final List<String> playlists = ["Programming", "Marketing", "Math"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
