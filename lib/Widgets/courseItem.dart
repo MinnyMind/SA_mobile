@@ -21,17 +21,26 @@ class CourseItem extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+        child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              imageUrl,
+            child: Image.network(
+              imageUrl.isNotEmpty ? imageUrl : "assets/images/littleGirl.jpg", // ใช้รูปจาก assets ถ้า URL ว่างเปล่า
               width: 60,
               height: 60,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  "assets/images/littleGirl.jpg", // ใช้รูปจาก assets ถ้าโหลดจากเน็ตไม่ได้
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
+
           const SizedBox(width: 16),
 
           Expanded(
