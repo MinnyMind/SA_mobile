@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/courseItem.dart';
 import 'package:spaceship_academy/pages/playlistEdit.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PlaylistInfo extends StatefulWidget {
   const PlaylistInfo({super.key});
@@ -21,145 +22,140 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
     super.initState();
     fetchCourses();
     fetchPlaylist();
+    
   }
 
-  Future<void> fetchCourses() async {
-    final dio = Dio();
-    // const defaultFilters = {
-    //   "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
-    //   "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb"
-    // };
+Future<void> fetchCourses() async {
+  try {
+    final response = await http.get(
+      Uri.parse("http://localhost:7501/api/playlistsInfoMobile").replace(
+        queryParameters: {
+          "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
+          "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb",
+        },
+      ),
+      headers: {"Content-Type": "application/json"},
+    );
 
-    try {
-      print("🚀 Fetching courses...");
-      final response = await dio.get(
-        "http://localhost:7501/api/playlistsInfoMobile",
-          queryParameters: {
-            "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
-            "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb",
-          },
-        options: Options(headers: {"Content-Type": "application/json"}),
-      );
-
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
       setState(() {
-        courses = response.data['data'] ?? [];
+        courses = data['data'] ?? [];
         isLoading = false;
       });
-    } catch (e) {
-      if (e is DioException) {
-        print("❌ Dio Error: ${e.message}");
-      } else {
-        print("❌ Unknown Error: $e");
-      }
-      setState(() => isLoading = false);
     }
+  } catch (e) {
+    print("❌ Error: $e");
+    setState(() => isLoading = false);
   }
+}
 
-  Future<void> fetchPlaylist() async {
-    final dio = Dio();
-    try {
-      print("🚀 Fetching playlists...");
-      final response = await dio.get(
-        "http://localhost:7501/api/playlists",
+
+Future<void> fetchPlaylist() async {
+  try {
+    final response = await http.get(
+      Uri.parse("http://localhost:7501/api/playlists").replace(
         queryParameters: {
           "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
         },
-        options: Options(headers: {"Content-Type": "application/json"}),
-      );
+      ),
+      headers: {"Content-Type": "application/json"},
+    );
 
-      // สมมติว่า response.data['data'] เป็น List ของ object ที่มี play_id และ play_title
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
       setState(() {
-        playlists = List<Map<String, dynamic>>.from(response.data['data']);
-        // กำหนดค่าเริ่มต้นให้ selectedPlaylists สำหรับแต่ละ playlist เป็น false
+        playlists = List<Map<String, dynamic>>.from(data['data']);
         for (var play in playlists) {
           selectedPlaylists[play['play_id']] = false;
         }
         isLoading = false;
       });
-    } catch (e) {
-      print("❌ Error: $e");
-      setState(() => isLoading = false);
     }
+  } catch (e) {
+    print("❌ Error: $e");
+    setState(() => isLoading = false);
   }
+}
 
-  // ฟังก์ชันสำหรับเรียก API เพิ่ม course ลง playlist
-  Future<void> addCourseToPlaylist(String playId, Map<String, dynamic> course) async {
-    final dio = Dio();
-    try {
-      // สมมติว่าคุณมีค่า user_id และ course_id อยู่แล้ว
-      final userId = "a56aa5dd-330a-4de9-ace1-40c16cc01c0e";
-      final cosId = course['cos_id']; // หรือชื่อ field ที่ใช้แทน course id
-      final datetime = DateTime.now().toIso8601String();
 
-      final response = await dio.post(
-        "http://localhost:7501/api/addCoursePlayLists",
-        queryParameters: {
-          "userId": userId,
-        },
-        data: {
-          "cosId": cosId,
-          "playId": playId,
-          "datetime": datetime, // ถ้าต้องส่งค่านี้ไปด้วย
-        },
-        options: Options(headers: {"Content-Type": "application/json"}),
-      );
-      print("✅ Course added to playlist successfully: ${response.data}");
-    } catch (e) {
-      print("❌ Failed to add course: $e");
-    }
+Future<void> addCourseToPlaylist(String playId, Map<String, dynamic> course) async {
+try {
+  print("Adding course to playlist..."+course['cos_id']);
+  print("Adding course to playlist..."+playId);
+  final response = await http.post(
+    Uri.parse("http://localhost:7501/api/addCoursePlayLists"),
+    headers: {"Content-Type": "application/json"},
+    body: json.encode({
+      "userId": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
+      "cosId": course['cos_id'],
+      "playId": playId,
+    }),
+  );
+  
+  if (response.statusCode == 200) {
+    print("✅ Course added to playlist successfully");
+  } else {
+    print("❌ Failed to add course: ${response.statusCode} ${response.body}");
   }
+} catch (e) {
+  print("❌ Failed to add course: $e");
+}
+
+}
+
 Future<void> fetchCoursePlaylists(Map<String, dynamic> course) async {
-  final dio = Dio();
   try {
     final cosId = course['cos_id'];
-    final response = await dio.get(
-      "http://localhost:7501/api/checkPlaylists",
-      queryParameters: {"cosId": cosId},
-      options: Options(headers: {"Content-Type": "application/json"}),
+    final response = await http.get(
+      Uri.parse("http://localhost:7501/api/checkPlaylists").replace(
+        queryParameters: {"cosId": cosId},
+      ),
+      headers: {"Content-Type": "application/json"},
     );
 
-    if (response.data != null && response.data['data'] is List) {
-      List<String> coursePlaylists = (response.data['data'] as List)
-          .map((item) => item['play_title'].toString().trim()) // ใช้ play_title แทน play_id
-          .toList();
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-      setState(() {
-        selectedPlaylists.clear(); // ล้างค่าเก่า
-        for (var play in playlists) {
-          String playTitle = play['play_title'].toString().trim();
-          selectedPlaylists[playTitle] = coursePlaylists.contains(playTitle);
-        }
-        print(selectedPlaylists);
-      });
+      if (data['data'] is List) {
+        List<String> coursePlaylists = (data['data'] as List)
+            .map((item) => item['play_title'].toString().trim())
+            .toList();
+
+        setState(() {
+          selectedPlaylists.clear(); // ล้างค่าเก่า
+          for (var play in playlists) {
+            String playTitle = play['play_title'].toString().trim();
+            selectedPlaylists[playTitle] = coursePlaylists.contains(playTitle);
+          }
+          print(selectedPlaylists);
+        });
+      }
     }
   } catch (e) {
     print("❌ Failed to fetch course playlists: $e");
   }
 }
 
-Future<void> removeCourseFromPlaylist(String playId, String cosId, String userId) async {
-  final dio = Dio();
-  try {
-    final response = await dio.delete(
-      "http://localhost:7501/api/CoursePlayLists",
-      queryParameters: {
-          "userId": userId,
-      },
-      data: {"cosId": cosId, "playId": playId},
-      options: Options(headers: {"Content-Type": "application/json"}),
-    );
 
+Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
+  try {
+    final response = await http.delete(
+      Uri.parse("http://localhost:7501/api/CoursePlayLists"),
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "userId": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
+        "cosId": cosId, 
+        "playId": playId}),
+    );
+    
     if (response.statusCode == 200) {
       print("✅ Removed course $cosId from playlist $playId successfully");
-    } else {
-      print("❌ Failed to remove course $cosId from playlist $playId");
     }
   } catch (e) {
     print("❌ Error removing course from playlist: $e");
   }
 }
-
-
 
 
   @override
@@ -195,67 +191,71 @@ Future<void> removeCourseFromPlaylist(String playId, String cosId, String userId
                         : "assets/images/littleGirl.jpg",
                     courseName: course["cos_title"] ?? "Unknown Course",
                     courseDescription: course["cos_subtitle"] ?? "No description available",
-onMorePressed: () async {
-  await fetchCoursePlaylists(course); // โหลดค่าก่อน
-  if (!mounted) return; // ป้องกัน error ถ้า widget ถูก dispose
+                      onMorePressed: () async {
+                        await fetchCoursePlaylists(course); // โหลดค่าก่อน
+                        if (!mounted) return; // ป้องกัน error ถ้า widget ถูก dispose
 
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setModalState) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Add to playlist",
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  ...playlists.map((playlist) {
-                    final playTitle = playlist['play_title'].trim();
-                    bool isChecked = selectedPlaylists[playTitle] ?? false;
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) {
+                            return StatefulBuilder(
+                              builder: (context, setModalState) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          "Add to playlist",
+                                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        ...playlists.map((playlist) {
+                                          final playTitle = playlist['play_title'].trim();
+                                          bool isChecked = selectedPlaylists[playTitle] ?? false;
 
-                    print("playTitle: $playTitle, selected: $isChecked"); // ตรวจสอบค่า
+                                          return CheckboxListTile(
+                                            title: Text(
+                                              playTitle,
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                            value: isChecked,
+                                              onChanged: (bool? value) {
+                                                setModalState(() {
+                                                  selectedPlaylists[playTitle] = value ?? false;
+                                                });
 
-                    return CheckboxListTile(
-                      title: Text(
-                        playTitle,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      value: isChecked,
-                      onChanged: (bool? value) {
-                        setModalState(() {
-                          selectedPlaylists[playTitle] = value ?? false;
-                        });
-                        if (value == true) {
-                          addCourseToPlaylist(playTitle, course);
-                        }
+                                                if (value == true) {
+                                                  // เพิ่มคอร์สเข้า playlist
+                                                  addCourseToPlaylist(playlist['play_id'], course);
+                                                } else {
+                                                  // ลบคอร์สออกจาก playlist
+                                                  removeCourseFromPlaylist(playlist['play_id'], course['cos_id']).then((_) {
+                                                    Navigator.pop(context); // ปิด BottomSheet
+                                                    fetchCourses(); // โหลดข้อมูลใหม่
+                                                  });
+                                                }
+                                              },
+
+                                            activeColor: Colors.purpleAccent,
+                                            checkColor: Colors.black,
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                          );
+                                        }).toList(),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
                       },
-                      activeColor: Colors.purpleAccent,
-                      checkColor: Colors.black,
-                      controlAffinity: ListTileControlAffinity.leading,
-                    );
-                  }).toList(),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    },
-  );
-},
-
-
-
                   ),
                 );
               },
