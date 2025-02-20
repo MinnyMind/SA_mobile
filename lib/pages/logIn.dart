@@ -1,14 +1,22 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'myLearning.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storage = FlutterSecureStorage();
+  String? token = await storage.read(key: 'token');
+
   runApp(MaterialApp(
-    home: LoginScreen(),
+    home: token != null
+        ? MyLearning()
+        : LoginScreen(), // ถ้ามี Token ไปหน้า MyLearning
     debugShowCheckedModeBanner: false,
   ));
 }
@@ -27,7 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final storage = FlutterSecureStorage();
 
   Future<void> fetchData() async {
-
     final url = Uri.parse('http://150.95.25.61:7779/api/auth/getAuth');
 
     final headers = {
@@ -35,22 +42,28 @@ class _LoginScreenState extends State<LoginScreen> {
       'X-TTT': '4f781ebba1a655430fb6db734c2c156f',
     };
 
-    final body = jsonEncode({'user': usernameController.text, 'password': passwordController.text});
+    final body = jsonEncode(
+        {'user': usernameController.text, 'password': passwordController.text});
     try {
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: body
-      );
+      final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        setState(() {
+        setState(() async {
           Map<String, dynamic> responseData = jsonDecode(response.body);
           String? token = responseData['token'];
-          print(token);
+          // print(token);
 
-          if( token != null ){
-           
+          if (token != null) {
+            await storage.write(key: 'token', value: token); // บันทึก Token
+
+            // if (mounted) {
+            //   GoRouter.of(context).go('/myLearning');
+            // }
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MyLearning()),
+            );
           }
         });
       } else {
@@ -63,6 +76,24 @@ class _LoginScreenState extends State<LoginScreen> {
         responseData = 'Failed to connect';
       });
     }
+  }
+
+  void showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   bool _obscurePassword = true;
