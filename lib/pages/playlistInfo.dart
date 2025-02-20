@@ -142,7 +142,10 @@ Future<void> removeCourseFromPlaylist(String playId, String cosId, String userId
   try {
     final response = await dio.delete(
       "http://localhost:7501/api/CoursePlayLists",
-      data: {"cosId": cosId, "playId": playId, "userId": userId}, // ✅ ใช้ body แทน query
+      queryParameters: {
+          "userId": userId,
+      },
+      data: {"cosId": cosId, "playId": playId},
       options: Options(headers: {"Content-Type": "application/json"}),
     );
 
