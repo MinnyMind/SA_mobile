@@ -39,19 +39,15 @@ class _MyLearningState extends State<MyLearning> {
         final data = jsonDecode(response.body);
         List<dynamic> courses = data['learning']['data'];
 
-        // Map ข้อมูลเพื่อเก็บเฉพาะ cos_profile
        setState(() {
           imagePaths = courses.map((course) {
-      
             final String imageUrl = course['cos_profile']?.toString() ?? '';
-            return imageUrl.startsWith("http") ? imageUrl : baseUrl + imageUrl;
+            return imageUrl.isNotEmpty && imageUrl.startsWith("http")
+                ? imageUrl
+                : 'assets/images/logoSA.png'; 
           }).toList();
-          print("Image Paths: $imagePaths");
-
-          
         });
         
-
       } else {
         print("Failed to load courses: ${response.statusCode}");
       }
@@ -76,7 +72,7 @@ class _MyLearningState extends State<MyLearning> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Mylearningitem(
-            imagePath: imagePaths, 
+            imagePath: imagePaths .isNotEmpty ? imagePaths : [], 
             menu: "All Courses",
             onPressed: () {
               Navigator.push(
