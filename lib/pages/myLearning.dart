@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spaceship_academy/pages/allCourse.dart';
 import '../Widgets/myLearningItem.dart';
+import 'package:dio/dio.dart';
 
 class MyLearning extends StatelessWidget {
   const MyLearning({super.key});
@@ -27,6 +28,13 @@ class MyLearning extends StatelessWidget {
               'assets/Images/science.png',
               ],
               menu: "All Courses",
+               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllCourse()), 
+                );
+              },
              
             ),
              Mylearningitem(

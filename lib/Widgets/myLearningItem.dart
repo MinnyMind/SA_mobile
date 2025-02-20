@@ -29,8 +29,8 @@ class Mylearningitem extends StatelessWidget {
                   style: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-              TextButton(
-                onPressed: () {},
+            TextButton(
+                onPressed: onPressed, // ใช้ onPressed ที่รับมาจาก Parameter
                 child: const Text("see all",
                     style: TextStyle(color: Colors.white70)),
               ),
