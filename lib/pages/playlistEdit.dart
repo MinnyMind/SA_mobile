@@ -132,17 +132,18 @@ class _PlaylistEditState extends State<PlaylistEdit> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
-              width: 250, // กำหนดความกว้างของช่อง input
-              padding:
-                  EdgeInsets.only(right: 10), // เพิ่มช่องว่างด้านขวาเล็กน้อย
+              width: 250, // Keep the width of the input field
+              padding: EdgeInsets.only(right: 10), // Small space on the right
               child: TextField(
                 controller: _titleController,
-                textAlign: TextAlign.center, // จัดข้อความให้ตรงกลางในแนวนอน
-                // textAlignVertical:TextAlignVertical.center, // จัดข้อความให้ตรงกลางในแนวตั้ง
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center, // Align text horizontally at the center
+                textAlignVertical: TextAlignVertical.center, // Align text vertically at the center
+                style: TextStyle(color: Colors.white, fontSize: 18, letterSpacing: -1.5),
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
-                      vertical: 12), // ปรับช่องว่างด้านในให้พอดีกับกรอบ
+                      vertical: 8,
+                      horizontal:
+                          8), // Adjust padding for consistent appearance
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey, width: 2),
                     borderRadius: BorderRadius.circular(12),
@@ -154,9 +155,9 @@ class _PlaylistEditState extends State<PlaylistEdit> {
                   filled: true,
                   fillColor: const Color.fromRGBO(20, 18, 24, 1),
                 ),
-                maxLines: 1, // แสดงแค่ 1 บรรทัด
+                maxLines: 1, // Only display 1 line
                 textInputAction:
-                    TextInputAction.done, // เมื่อกด 'done' บนคีย์บอร์ด
+                    TextInputAction.done, // Close the keyboard when done
               ),
             )
           ],
@@ -187,7 +188,7 @@ class _PlaylistEditState extends State<PlaylistEdit> {
                               item["cos_subtitle"] ??
                                   "No description available",
                               item["cos_profile"] ??
-                                  "https://via.placeholder.com/60",
+                                  "assets/images/littleGirl.jpg",
                               item["cos_id"] ?? "", // ส่ง cos_id ไปด้วย
                             );
                           },
@@ -229,27 +230,63 @@ class _PlaylistEditState extends State<PlaylistEdit> {
         ? imageUrl
         : "http://localhost:7501/$imageUrl";
 
-    return ListTile(
-      leading: Image.network(
-        fullImageUrl,
-        width: 60,
-        height: 60,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Image.network(
-            "https://via.placeholder.com/60", // ใช้รูป Default ถ้าโหลดไม่ได้
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
-          );
-        },
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
       ),
-      title: Text(name, style: TextStyle(color: Colors.white)),
-      subtitle: Text(description, style: TextStyle(color: Colors.white70)),
-      trailing: IconButton(
-        onPressed: () => removeCourseFromPlaylist(selectedPlaylistId, courseId,
-            "a56aa5dd-330a-4de9-ace1-40c16cc01c0e"),
-        icon: Icon(Icons.delete, color: Colors.white),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              fullImageUrl,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  "assets/images/littleGirl.jpg", // Use the default image if loading fails
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => removeCourseFromPlaylist(selectedPlaylistId,
+                courseId, "a56aa5dd-330a-4de9-ace1-40c16cc01c0e"),
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
