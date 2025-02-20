@@ -15,7 +15,7 @@ class CustomNavbar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) {
-        if (index == 0 || index == 3) {
+        if (index == 0 || index == 1 || index == 2 || index == 3 || index == 4) {
           onTap(index);
         }
       },
