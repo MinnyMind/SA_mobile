@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/courseItem.dart';
 import './myLearning.dart';
 
-
 class AllCourse extends StatelessWidget {
-  
   const AllCourse({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> allCourses = [
       {
@@ -22,7 +20,8 @@ class AllCourse extends StatelessWidget {
       },
       {
         "name": "C++",
-        "description": "Master the basics and advanced applications of C++ programming.",
+        "description":
+            "Master the basics and advanced applications of C++ programming.",
         "image": "assets/images/c++.png"
       },
       {
@@ -32,34 +31,34 @@ class AllCourse extends StatelessWidget {
       },
       {
         "name": "Javascript",
-        "description": "Understand from fundamentals to building web applications.",
+        "description":
+            "Understand from fundamentals to building web applications.",
         "image": "assets/images/javascript.png"
       }
     ];
 
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MyLearning()), 
-              );
-            },
-          ),
-          title: Row(
-            children: [
-              const Spacer(), // เพิ่มช่องว่าง
-              const Text(
-                "ALL COURSES",
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-          backgroundColor: const Color.fromRGBO(20, 18, 24, 1), // ให้ตรงกับ theme
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MyLearning()),
+            );
+          },
         ),
-
+        title: Row(
+          children: [
+            const Spacer(), // เพิ่มช่องว่าง
+            const Text(
+              "ALL COURSES",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+        backgroundColor: const Color.fromRGBO(20, 18, 24, 1), // ให้ตรงกับ theme
+      ),
       body: ListView.builder(
         itemCount: allCourses.length,
         itemBuilder: (context, index) {
@@ -71,7 +70,10 @@ class AllCourse extends StatelessWidget {
               courseName: item["name"]!,
               courseDescription: item["description"]!,
               onMorePressed: () {
-                
+                Navigator.pop(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyLearning()),
+                );
               },
             ),
           );

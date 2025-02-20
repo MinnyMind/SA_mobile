@@ -13,7 +13,8 @@ class MyLearning extends StatefulWidget {
 
 class _MyLearningState extends State<MyLearning> {
   List<String> imagePaths = [];
-  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; // ใช้ Token ที่ได้
+  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; 
+  final String baseUrl = "http://localhost:7501";
 
   @override
   void initState() {
@@ -24,13 +25,13 @@ class _MyLearningState extends State<MyLearning> {
   Future<void> fetchMyLearning() async {
     try {
       final response = await http.post(
-        Uri.parse("http://150.95.25.61:7779/api/mylearning"),
+        Uri.parse("http://localhost:7501/api/mylearning"),
         headers: {
-          "Authorization": "Bearer $token", // ส่ง Token
+          "Authorization": "Bearer $token", 
           "Content-Type": "application/json",
         },
         body: jsonEncode({
-          "temp": {"page": 1, "size": 100, "search": ""}
+          "temp": {"page": 1, "size": 12, "search": ""}
         }),
       );
 
@@ -39,12 +40,17 @@ class _MyLearningState extends State<MyLearning> {
         List<dynamic> courses = data['learning']['data'];
 
         // Map ข้อมูลเพื่อเก็บเฉพาะ cos_profile
-        setState(() {
+       setState(() {
           imagePaths = courses.map((course) {
-            return course['cos_profile']?.toString() ??
-                'assets/images/Logo_SA.png';
+      
+            final String imageUrl = course['cos_profile']?.toString() ?? '';
+            return imageUrl.startsWith("http") ? imageUrl : baseUrl + imageUrl;
           }).toList();
+          print("Image Paths: $imagePaths");
+
+          
         });
+        
 
       } else {
         print("Failed to load courses: ${response.statusCode}");
