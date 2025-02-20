@@ -14,7 +14,7 @@ class MyLearning extends StatefulWidget {
 class _MyLearningState extends State<MyLearning> {
   List<String> imagePaths = [];
   final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; 
-  final String baseUrl = "http://localhost:7501";
+  final String baseUrl = "http://localhost:7501/";
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _MyLearningState extends State<MyLearning> {
           "Content-Type": "application/json",
         },
         body: jsonEncode({
-          "temp": {"page": 1, "size": 12, "search": ""}
+          "temp": {"page": 1, "size": 20, "search": ""}
         }),
       );
 
@@ -70,24 +70,24 @@ class _MyLearningState extends State<MyLearning> {
         ),
         backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Mylearningitem(
-              imagePath: imagePaths,
-              menu: "All Courses",
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AllCourse()),
-                );
-              },
-            ),
-          ],
-        ),
+    body: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Mylearningitem(
+            imagePath: imagePaths, 
+            menu: "All Courses",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AllCourse()),
+              );
+            },
+          ),
+        ],
       ),
-    );
+    ),
+  );
   }
 }

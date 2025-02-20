@@ -40,7 +40,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor:
-       Color.fromRGBO(20, 18, 24, 1),
+      Color.fromRGBO(20, 18, 24, 1),
+      
         textTheme: GoogleFonts.interTextTheme(),
       ),
       home: _selectedIndex == 6
