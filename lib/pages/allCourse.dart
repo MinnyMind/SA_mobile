@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/courseItem.dart';
+import './myLearning.dart';
 
 
 class AllCourse extends StatelessWidget {
@@ -41,10 +42,10 @@ class AllCourse extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              //Navigator.pushReplacement(
-                //context,
-                //MaterialPageRoute(builder: (context) => MyLearning()), 
-              //);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MyLearning()), 
+              );
             },
           ),
           title: Row(
