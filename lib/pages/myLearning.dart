@@ -13,7 +13,7 @@ class MyLearning extends StatefulWidget {
 
 class _MyLearningState extends State<MyLearning> {
   List<String> imagePaths = [];
-  final String token = "YOUR_BEARER_TOKEN"; // ใช้ Token ที่ได้
+  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; // ใช้ Token ที่ได้
 
   @override
   void initState() {
@@ -45,6 +45,7 @@ class _MyLearningState extends State<MyLearning> {
                 'assets/images/Logo_SA.png';
           }).toList();
         });
+
       } else {
         print("Failed to load courses: ${response.statusCode}");
       }
@@ -69,9 +70,7 @@ class _MyLearningState extends State<MyLearning> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Mylearningitem(
-              imagePath: imagePaths.isNotEmpty
-                  ? imagePaths
-                  : ['assets/images/Logo_SA.png'],
+              imagePath: imagePaths,
               menu: "All Courses",
               onPressed: () {
                 Navigator.push(
