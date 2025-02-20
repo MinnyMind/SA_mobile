@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:spaceship_academy/pages/allCourse.dart';
 import '../Widgets/myLearningItem.dart';
 
@@ -11,8 +12,8 @@ class MyLearning extends StatefulWidget {
 }
 
 class _MyLearningState extends State<MyLearning> {
-  List<String> imagePaths = []; // เก็บรายการคอร์สที่ได้จาก API
-  final String token = "YOUR_FIXED_TOKEN"; // ใส่ Token คงที่
+  List<String> imagePaths = [];
+  final String token = "YOUR_BEARER_TOKEN"; // ใช้ Token ที่ได้
 
   @override
   void initState() {
@@ -22,27 +23,30 @@ class _MyLearningState extends State<MyLearning> {
 
   Future<void> fetchMyLearning() async {
     try {
-      Dio dio = Dio();
-      final response = await dio.post(
-        "https://yourapi.com/mylearning", // ใส่ URL API ที่ถูกต้อง
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $token", // ส่ง Token ไปกับ Header
-            "Content-Type": "application/json",
-          },
-        ),
-        data: {
-          "temp": {"page": 1, "size": 12, "search": ""}
+      final response = await http.post(
+        Uri.parse("http://150.95.25.61:7779/api/mylearning"),
+        headers: {
+          "Authorization": "Bearer $token", // ส่ง Token
+          "Content-Type": "application/json",
         },
+        body: jsonEncode({
+          "temp": {"page": 1, "size": 100, "search": ""}
+        }),
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> courses = response.data['learning'];
+        final data = jsonDecode(response.body);
+        List<dynamic> courses = data['learning']['data'];
+
+        // Map ข้อมูลเพื่อเก็บเฉพาะ cos_profile
         setState(() {
-          imagePaths = courses
-              .map((course) => course['cos_profile'].toString())
-              .toList();
+          imagePaths = courses.map((course) {
+            return course['cos_profile']?.toString() ??
+                'assets/images/Logo_SA.png';
+          }).toList();
         });
+      } else {
+        print("Failed to load courses: ${response.statusCode}");
       }
     } catch (error) {
       print("Error fetching courses: $error");
@@ -67,9 +71,7 @@ class _MyLearningState extends State<MyLearning> {
             Mylearningitem(
               imagePath: imagePaths.isNotEmpty
                   ? imagePaths
-                  : [
-                      'assets/Images/default.png'
-                    ], // ใช้ค่าเริ่มต้นหากไม่มีข้อมูล
+                  : ['assets/images/Logo_SA.png'],
               menu: "All Courses",
               onPressed: () {
                 Navigator.push(
