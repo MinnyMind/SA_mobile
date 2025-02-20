@@ -188,7 +188,7 @@ Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
                   child: CourseItem(
                     imageUrl: (course["cos_profile"] != null && course["cos_profile"].isNotEmpty) 
                     ? course["cos_profile"] 
-                    : "assets/images/littleGirl.jpg",
+                    : "assets/images/logoSA.png",
                     courseName: course["cos_title"] ?? "Unknown Course",
                     courseDescription: course["cos_subtitle"] ?? "No description available",
                       onMorePressed: () async {
