@@ -1,10 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:spaceship_academy/pages/allCourse.dart';
 import '../Widgets/myLearningItem.dart';
-import 'package:dio/dio.dart';
 
-class MyLearning extends StatelessWidget {
+class MyLearning extends StatefulWidget {
   const MyLearning({super.key});
+
+  @override
+  _MyLearningState createState() => _MyLearningState();
+}
+
+class _MyLearningState extends State<MyLearning> {
+  List<String> imagePaths = []; // เก็บรายการคอร์สที่ได้จาก API
+  final String token = "YOUR_FIXED_TOKEN"; // ใส่ Token คงที่
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMyLearning();
+  }
+
+  Future<void> fetchMyLearning() async {
+    try {
+      Dio dio = Dio();
+      final response = await dio.post(
+        "https://yourapi.com/mylearning", // ใส่ URL API ที่ถูกต้อง
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // ส่ง Token ไปกับ Header
+            "Content-Type": "application/json",
+          },
+        ),
+        data: {
+          "temp": {"page": 1, "size": 12, "search": ""}
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> courses = response.data['learning'];
+        setState(() {
+          imagePaths = courses
+              .map((course) => course['cos_profile'].toString())
+              .toList();
+        });
+      }
+    } catch (error) {
+      print("Error fetching courses: $error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,40 +65,19 @@ class MyLearning extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Mylearningitem(
-              imagePath: ['assets/Images/marketing.png',
-              'assets/Images/juanjo-jaramillo-mZnx9429i94-unsplash-1024x683.jpg',
-              'assets/Images/math.png',
-              'assets/Images/science.png',
-              ],
+              imagePath: imagePaths.isNotEmpty
+                  ? imagePaths
+                  : [
+                      'assets/Images/default.png'
+                    ], // ใช้ค่าเริ่มต้นหากไม่มีข้อมูล
               menu: "All Courses",
-               onPressed: () {
+              onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => AllCourse()), 
+                  MaterialPageRoute(builder: (context) => AllCourse()),
                 );
               },
-             
             ),
-             Mylearningitem(
-              imagePath: [
-                'assets/images/c++.png',
-              ],
-              menu: "Playlist",
-            ),
-             Mylearningitem(
-              imagePath: [
-               'assets/images/javascript.png',
-              ],
-              menu: "Wishlist",
-            ),
-             Mylearningitem(
-              imagePath: [
-               'assets/images/mongodb.png',
-              ],
-              menu: "Archived",
-            ),
-            
           ],
         ),
       ),
