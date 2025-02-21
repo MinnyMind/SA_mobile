@@ -1,47 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:spaceship_academy/Widgets/playlistItem.dart';
 import '../pages/playlistInfo.dart';
-import 'package:spaceship_academy/pages/myLearning.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class Playlist extends StatelessWidget {
+class Playlist extends StatefulWidget {
   const Playlist({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> playlists = [
-      {
-        'name': 'List Programming',
-        'image':
-            'assets/Images/juanjo-jaramillo-mZnx9429i94-unsplash-1024x683.jpg'
-      },
-      {'name': 'List Marketing', 'image': 'assets/Images/marketing.png'},
-      {'name': 'List Math', 'image': 'assets/Images/math.png'},
-      {'name': 'List Science', 'image': 'assets/Images/science.png'},
-    ];
+  State<Playlist> createState() => _PlaylistState();
+}
 
+class _PlaylistState extends State<Playlist> {
+  List<Map<String, dynamic>> playlists = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPlaylist();
+  }
+
+  Future<void> fetchPlaylist() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://localhost:7501/api/playlists").replace(
+          queryParameters: {
+            "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
+          },
+        ),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          playlists = List<Map<String, dynamic>>.from(data['data']);
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("❌ Error: $e");
+      setState(() => isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor:  Color.fromRGBO(20, 18, 24, 1),
         elevation: 0,
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(
-                context,
-                MaterialPageRoute(builder: (context) => MyLearning()),
-              );
-            }),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: const [
-            Text(
-              "ALL PLAYLISTS",
-              style: TextStyle(color: Colors.white,
-              fontSize: 18),
-              
-            ),
-          ],
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
+        title: const Text('ALL PLAYLIST', style: TextStyle(color: Colors.white)),
+      ),
+      backgroundColor: Colors.black,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: ListView.builder(
+                itemCount: playlists.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      print(playlists[index]['play_id']);
+                      // ส่ง play_id ไปยังหน้า PlaylistInfo
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlaylistInfo(playId: playlists[index]['play_id']),
+                          ),
+                        );
+
+                    },
+                    child: Playlistitem(
+                      playlistName: playlists[index]['play_title'] ?? 'No Title',
+                      imagePath: (playlists[index]['image'] != null && playlists[index]['image'].isNotEmpty)
+                          ? playlists[index]['image']
+                          : "assets/images/logoSA.png",
+                    ),
+                  );
+                },
+              ),
+            ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple,
+        onPressed: () {
+          // Action to add a new playlist
+        },
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     MyLearning(),
-    PlaylistInfo(),
+    PlaylistInfo(playId: ""),
     AllCourse(),
     Playlist(),
     PlaylistEdit(),
