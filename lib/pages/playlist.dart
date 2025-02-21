@@ -52,11 +52,11 @@ class Playlist extends StatelessWidget {
         ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.transparent,
         onPressed: () {
           // Action to add a new playlist
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add_circle_outline_outlined, color: Colors.white),
       ),
     );
   }
