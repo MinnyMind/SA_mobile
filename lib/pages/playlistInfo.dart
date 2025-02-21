@@ -174,7 +174,15 @@ Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text("List Programming", style: TextStyle(color: Colors.white)),
+          title: Text(
+              playlists.isNotEmpty
+                  ? playlists.firstWhere(
+                      (playlist) => playlist['play_id'] == widget.playId,
+                      orElse: () => {'play_title': 'Unknown Playlist'},
+                    )['play_title']
+                  : '',
+              style: const TextStyle(color: Colors.white),
+            ),
         backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
         actions: [
           IconButton(
