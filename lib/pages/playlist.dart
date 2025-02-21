@@ -49,7 +49,7 @@ class _PlaylistState extends State<Playlist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:  Color.fromRGBO(20, 18, 24, 1),
+        backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -57,13 +57,15 @@ class _PlaylistState extends State<Playlist> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text('ALL PLAYLIST', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('ALL PLAYLIST', style: TextStyle(color: Colors.white)),
       ),
       backgroundColor: Colors.black,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: ListView.builder(
                 itemCount: playlists.length,
                 itemBuilder: (context, index) {
@@ -71,17 +73,19 @@ class _PlaylistState extends State<Playlist> {
                     onTap: () {
                       print(playlists[index]['play_id']);
                       // ส่ง play_id ไปยังหน้า PlaylistInfo
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaylistInfo(playId: playlists[index]['play_id']),
-                          ),
-                        );
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PlaylistInfo(playId: playlists[index]['play_id']),
+                        ),
+                      );
                     },
                     child: Playlistitem(
-                      playlistName: playlists[index]['play_title'] ?? 'No Title',
-                      imagePath: (playlists[index]['image'] != null && playlists[index]['image'].isNotEmpty)
+                      playlistName:
+                          playlists[index]['play_title'] ?? 'No Title',
+                      imagePath: (playlists[index]['image'] != null &&
+                              playlists[index]['image'].isNotEmpty)
                           ? playlists[index]['image']
                           : "assets/images/logoSA.png",
                     ),
@@ -96,41 +100,6 @@ class _PlaylistState extends State<Playlist> {
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: ListView.builder(
-          itemCount: playlists.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                // เมื่อกดแล้วไปหน้า PlaylistInfo
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PlaylistInfo()),
-                );
-              },
-              child: Playlistitem(
-                playlistName: playlists[index]['name']!,
-                imagePath: playlists[index]['image']!,
-              ),
-            );
-          },
-        ),
-      ),
-        floatingActionButton: IconButton(
-    icon: const Icon(Icons.add_circle_outline_outlined, color: Colors.white,size: 40,),
-    onPressed: () {
-      // Action to add a new playlist
-    },
-  ),
-);
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Colors.transparent,
-      //   onPressed: () {
-      //     // Action to add a new playlist
-      //   },
-      //   child: const Icon(Icons.add, color: Colors.white),
-      // ),
-    
+    );
   }
 }
