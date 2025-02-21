@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +11,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final storage = FlutterSecureStorage();
   String? token = await storage.read(key: 'token');
+  print(token);
 
   runApp(MaterialApp(
     home: token != null
@@ -20,6 +20,22 @@ Future<void> main() async {
     debugShowCheckedModeBanner: false,
   ));
 }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   final storage = FlutterSecureStorage();
+//   String? token = await storage.read(key: 'token');
+
+//   runApp(GetMaterialApp(
+//     debugShowCheckedModeBanner: false,
+//     initialRoute: token != null ? '/myLearning' : '/login',
+//     getPages: [
+//       GetPage(name: '/login', page: () => LoginScreen()),
+//       GetPage(name: '/myLearning', page: () => MyLearning()),
+//     ],
+//   ));
+// }
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,6 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   String responseData = "Press LOGIN to fetch data";
   final storage = FlutterSecureStorage();
+  String? _errorMessage;
+  bool _obscurePassword = true;
 
   Future<void> fetchData() async {
     final url = Uri.parse('http://150.95.25.61:7779/api/auth/getAuth');
@@ -64,41 +82,28 @@ class _LoginScreenState extends State<LoginScreen> {
               context,
               MaterialPageRoute(builder: (context) => MyLearning()),
             );
-          }
+
+            // Get.offNamed('/myLearning');
+
+          }else {
+          setState(() {
+            _errorMessage = "Incorrect email or password";
+          });
+        }
         });
       } else {
         setState(() {
+          _errorMessage = "Incorrect email or password";
           responseData = 'Error: ${response.statusCode}';
         });
       }
     } catch (e) {
       setState(() {
+        _errorMessage = "Failed to connect to server";
         responseData = 'Failed to connect';
       });
     }
   }
-
-  void showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  bool _obscurePassword = true;
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +174,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                   ),
+                ),
+              ),
+            ),
+
+            //Error message fail to login
+            const SizedBox(height: 10),
+            Visibility(
+              visible: _errorMessage != null,
+              child: Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.all(12),
+                width: double.infinity,
+                constraints: const BoxConstraints(maxWidth: 270),
+                decoration: BoxDecoration(
+                  color: Colors.red[400],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  _errorMessage ?? '',
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  textAlign: TextAlign.left,
                 ),
               ),
             ),
