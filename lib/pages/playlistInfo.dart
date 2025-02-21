@@ -5,12 +5,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PlaylistInfo extends StatefulWidget {
-  const PlaylistInfo({super.key});
+  final String playId; // ประกาศตัวแปร playId
 
+  const PlaylistInfo({
+    Key? key, 
+    required this.playId
+    }) : 
+    super(key: key);
+    
   @override
   State<PlaylistInfo> createState() => _PlaylistInfoState();
 }
-
 class _PlaylistInfoState extends State<PlaylistInfo> {
   List courses = [];
   List<Map<String, dynamic>> playlists = []; // สมมติว่ามี play_id และ play_title
@@ -20,6 +25,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   @override
   void initState() {
     super.initState();
+    print("Received playId: ${widget.playId}");
     fetchCourses();
     fetchPlaylist();
     
@@ -31,7 +37,8 @@ Future<void> fetchCourses() async {
       Uri.parse("http://localhost:7501/api/playlistsInfoMobile").replace(
         queryParameters: {
           "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
-          "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb",
+          "play_id": widget.playId,
+          // "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb",
         },
       ),
       headers: {"Content-Type": "application/json"},
@@ -44,6 +51,7 @@ Future<void> fetchCourses() async {
         isLoading = false;
       });
     }
+    print("Courses: $courses");
   } catch (e) {
     print("❌ Error: $e");
     setState(() => isLoading = false);
