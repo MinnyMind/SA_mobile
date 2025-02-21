@@ -250,7 +250,7 @@ Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
                                                 }
                                               },
 
-                                            activeColor: Colors.purpleAccent,
+                                            activeColor: Colors.white,
                                             checkColor: Colors.black,
                                             controlAffinity: ListTileControlAffinity.leading,
                                           );

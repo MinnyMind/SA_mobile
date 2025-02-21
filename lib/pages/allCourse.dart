@@ -13,7 +13,8 @@ class AllCourse extends StatefulWidget {
 
 class _AllCourseState extends State<AllCourse> {
   List<Map<String, dynamic>> allCourses = [];
-  final String token = "YOUR_TOKEN_HERE"; // Replace with your actual token
+  final String token =
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; 
   final String baseUrl = "http://localhost:7501";
 
   @override
@@ -50,7 +51,7 @@ class _AllCourseState extends State<AllCourse> {
                       ? (course['cos_profile'].toString().startsWith("http")
                           ? course['cos_profile']
                           : baseUrl + '/' + course['cos_profile'])
-                      : '',
+                      :  'assets/images/logoSA.png' ,
                 };
               })
               .toList()
@@ -71,7 +72,7 @@ class _AllCourseState extends State<AllCourse> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.pop(
               context,
               MaterialPageRoute(builder: (context) => MyLearning()),
             );
@@ -100,7 +101,7 @@ class _AllCourseState extends State<AllCourse> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: CourseItem(
-                    imageUrl: item["image"] ?? '',
+                    imageUrl: item["image"] ?? 'assets/images/logoSA.png',
                     courseName: item["name"] ?? 'Unnamed Course',
                     courseDescription: item["description"] ?? 'No Description',
                   ),
