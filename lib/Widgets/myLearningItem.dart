@@ -1,87 +1,70 @@
 import 'package:flutter/material.dart';
 
 class Mylearningitem extends StatelessWidget {
-  final List<String> imagePath;
+  final List<String> imagePath; // List of image URLs
   final String menu;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
 
   const Mylearningitem({
-    super.key,
+    Key? key,
     required this.imagePath,
     required this.menu,
-    this.onPressed,
-  });
+    required this.onPressed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: onPressed,
+      child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, 
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 16),
+                padding: EdgeInsets.only(left: 16,bottom: 16),
                 child: Text(
                   menu,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white), 
                 ),
               ),
-              TextButton(
-                onPressed: () {},
-                child: const Text("see all",
-                    style: TextStyle(color: Colors.white70)),
+           
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: imagePath.map((url) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.network(
+                        url,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover, 
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ],
           ),
-          SizedBox(
-            height: 120,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemCount: imagePath.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: CoursesImg(imagePath : imagePath[index]),
-                );
-              },
+       
+          Positioned(
+            right: 0,
+            child: TextButton(
+              onPressed: onPressed, 
+              child: const Text(
+                "See all",
+                style:
+                    TextStyle(color: Colors.white,
+                    fontSize: 16), 
+              ),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-class CoursesImg extends StatelessWidget {
-  final String imagePath;
-
-  const CoursesImg({super.key, required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              imagePath,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-          )
-        ]
-      ),
-    );
-
   }
 }

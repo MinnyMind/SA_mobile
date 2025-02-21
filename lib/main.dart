@@ -40,10 +40,11 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor:
-       Color.fromRGBO(20, 18, 24, 1),
+        Color.fromRGBO(20, 18, 24, 1),
+      
         textTheme: GoogleFonts.interTextTheme(),
       ),
-      home: _selectedIndex == 6
+      home: _selectedIndex == 5
           ? LoginScreen()
           : Scaffold(
               body: _screens[_selectedIndex],

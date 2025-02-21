@@ -22,10 +22,10 @@ final GoRouter router = GoRouter(
       path: '/playlist',
       builder: (context, state) => Playlist(),
     ),
-    GoRoute(
-      path: '/playlistInfo',
-      builder: (context, state) => PlaylistInfo(),
-    ),
+    // GoRoute(
+    //   path: '/playlistInfo',
+    //   builder: (context, state) => PlaylistInfo(),
+    // ),
     GoRoute(
       path: '/playlistEdit',
       builder: (context, state) => PlaylistEdit(),

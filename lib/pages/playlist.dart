@@ -3,6 +3,7 @@ import 'package:spaceship_academy/Widgets/playlistItem.dart';
 import '../pages/playlistInfo.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import './myLearning.dart';
 
 class Playlist extends StatefulWidget {
   const Playlist({super.key});
@@ -49,21 +50,32 @@ class _PlaylistState extends State<Playlist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor:Color.fromRGBO(20, 18, 24, 1),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.of(context).pop();
+             Navigator.pop(
+              context,
+              MaterialPageRoute(builder: (context) => MyLearning()),
+            );
           },
         ),
-        title: const Text('ALL PLAYLIST', style: TextStyle(color: Colors.white)),
-      ),
-      backgroundColor: Colors.black,
+        title:
+Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: const [
+            Text(
+              "PLAYLIST",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: ListView.builder(
                 itemCount: playlists.length,
                 itemBuilder: (context, index) {
@@ -71,17 +83,19 @@ class _PlaylistState extends State<Playlist> {
                     onTap: () {
                       print(playlists[index]['play_id']);
                       // ส่ง play_id ไปยังหน้า PlaylistInfo
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaylistInfo(playId: playlists[index]['play_id']),
-                          ),
-                        );
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PlaylistInfo(playId: playlists[index]['play_id']),
+                        ),
+                      );
                     },
                     child: Playlistitem(
-                      playlistName: playlists[index]['play_title'] ?? 'No Title',
-                      imagePath: (playlists[index]['image'] != null && playlists[index]['image'].isNotEmpty)
+                      playlistName:
+                          playlists[index]['play_title'] ?? 'No Title',
+                      imagePath: (playlists[index]['image'] != null &&
+                              playlists[index]['image'].isNotEmpty)
                           ? playlists[index]['image']
                           : "assets/images/logoSA.png",
                     ),
@@ -90,11 +104,14 @@ class _PlaylistState extends State<Playlist> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.transparent,
         onPressed: () {
           // Action to add a new playlist
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add_circle_outline_outlined,
+        color: Colors.white,
+        size: 40,
+    ),
       ),
     );
   }
