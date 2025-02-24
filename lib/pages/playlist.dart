@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:spaceship_academy/Widgets/playlistItem.dart';
 import '../pages/playlistInfo.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import './myLearning.dart';
+import '../data/playlistProvider.dart'; // Add this line to import PlaylistProvider
 
 class Playlist extends StatefulWidget {
   const Playlist({super.key});
@@ -13,7 +14,6 @@ class Playlist extends StatefulWidget {
 }
 
 class _PlaylistState extends State<Playlist> {
-  List<Map<String, dynamic>> playlists = [];
   bool isLoading = true;
 
   @override
@@ -21,7 +21,7 @@ class _PlaylistState extends State<Playlist> {
     super.initState();
     fetchPlaylist();
   }
-
+  
   Future<void> fetchPlaylist() async {
     try {
       final response = await http.get(
@@ -35,8 +35,10 @@ class _PlaylistState extends State<Playlist> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
+        playlistProvider.setPlaylists(List<Map<String, dynamic>>.from(data['data']));
+
         setState(() {
-          playlists = List<Map<String, dynamic>>.from(data['data']);
           isLoading = false;
         });
       }
@@ -50,68 +52,52 @@ class _PlaylistState extends State<Playlist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:Color.fromRGBO(20, 18, 24, 1),
+        backgroundColor: Color.fromRGBO(20, 18, 24, 1),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-             Navigator.pop(
-              context,
-              MaterialPageRoute(builder: (context) => MyLearning()),
-            );
+            Navigator.pop(context);
           },
         ),
-        title:
-Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: const [
-            Text(
-              "PLAYLIST",
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),      ),
+        title: const Text("PLAYLIST", style: TextStyle(color: Colors.white)),
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: ListView.builder(
-                itemCount: playlists.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      print(playlists[index]['play_id']);
-                      // ส่ง play_id ไปยังหน้า PlaylistInfo
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PlaylistInfo(playId: playlists[index]['play_id']),
+          : Consumer<PlaylistProvider>(
+              builder: (context, provider, child) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: ListView.builder(
+                    itemCount: provider.playlists.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlaylistInfo(
+                                playId: provider.playlists[index]['play_id'].toString(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Playlistitem(
+                          playlistName: provider.playlists[index]['play_title'] ?? 'No Title',
+                          imagePath: provider.playlists[index]['image'] ?? "assets/images/logoSA.png",
                         ),
                       );
                     },
-                    child: Playlistitem(
-                      playlistName:
-                          playlists[index]['play_title'] ?? 'No Title',
-                      imagePath: (playlists[index]['image'] != null &&
-                              playlists[index]['image'].isNotEmpty)
-                          ? playlists[index]['image']
-                          : "assets/images/logoSA.png",
-                    ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.transparent,
         onPressed: () {
           // Action to add a new playlist
         },
-        child: const Icon(Icons.add_circle_outline_outlined,
-        color: Colors.white,
-        size: 40,
-    ),
+        child: const Icon(Icons.add_circle_outline_outlined, color: Colors.white, size: 40),
       ),
     );
   }

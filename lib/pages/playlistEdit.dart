@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:spaceship_academy/data/playlistProvider.dart';
 
 class PlaylistEdit extends StatefulWidget {
-  const PlaylistEdit({super.key});
+  final String playId; // Add this field to accept playId
+
+  const PlaylistEdit(
+      {super.key, required this.playId}); // Add playId to constructor
 
   @override
   _PlaylistEditState createState() => _PlaylistEditState();
@@ -12,7 +17,7 @@ class PlaylistEdit extends StatefulWidget {
 class _PlaylistEditState extends State<PlaylistEdit> {
   final TextEditingController _titleController = TextEditingController();
   List<Map<String, dynamic>> _playlistItems = [];
-  List<String> playlists = [];
+  List<Map<String, dynamic>> playlists = [];
   String selectedPlaylistId = "";
   bool isLoading = true;
 
@@ -35,10 +40,21 @@ class _PlaylistEditState extends State<PlaylistEdit> {
         final data = jsonDecode(response.body);
         setState(() {
           if (data['data'].isNotEmpty) {
-            playlists = List<String>.from(
-                data['data'].map((item) => item['play_title'] as String));
-            selectedPlaylistId = data['data'][0]['play_id'];
-            _titleController.text = playlists[0];
+            playlists =
+                List<Map<String, dynamic>>.from(data['data'].map((item) {
+              return {
+                'play_id': item['play_id'],
+                'play_title': item['play_title'],
+              };
+            }));
+
+            // Select the playlist based on the passed play_id
+            selectedPlaylistId =
+                widget.playId; // Get it from the widget parameter
+            // Update the title controller text to match the selected playlist's title
+            _titleController.text = playlists.firstWhere((playlist) =>
+                playlist['play_id'].toString() ==
+                selectedPlaylistId)['play_title'];
           }
           isLoading = false;
         });
@@ -54,7 +70,7 @@ class _PlaylistEditState extends State<PlaylistEdit> {
     try {
       final response = await http.get(
         Uri.parse(
-            "http://localhost:7501/api/playlistsInfoMobile?user_id=a56aa5dd-330a-4de9-ace1-40c16cc01c0e&play_id=9c51cd12-fa8d-45ca-8388-4672ed9099f6"),
+            "http://localhost:7501/api/playlistsInfoMobile?user_id=a56aa5dd-330a-4de9-ace1-40c16cc01c0e&play_id=${widget.playId}"),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -73,9 +89,7 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   }
 
   Future<void> editPlaylist() async {
-    if (_titleController.text.isEmpty || selectedPlaylistId.isEmpty) {
-      return;
-    }
+    if (_titleController.text.isEmpty || selectedPlaylistId.isEmpty) return;
 
     try {
       final response = await http.patch(
@@ -88,7 +102,24 @@ class _PlaylistEditState extends State<PlaylistEdit> {
         }),
       );
 
-      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        // ใช้ provider เพื่ออัปเดต playlist
+        final provider = Provider.of<PlaylistProvider>(context, listen: false);
+        int index = provider.playlists.indexWhere(
+            (playlist) => playlist['play_id'] == selectedPlaylistId);
+        if (index != -1) {
+          provider.updatePlaylist(
+              index, _titleController.text); // ส่งชื่อ playlist ที่แก้ไข
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Playlist updated successfully!")),
+        );
+
+        // ไปหน้าก่อนหน้าและให้ข้อมูลถูกอัปเดต
+        Navigator.pop(context);
+      } else {
+        throw Exception("Failed to update playlist");
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error saving playlist")),
@@ -127,48 +158,51 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              width: 250, // Keep the width of the input field
-              padding: EdgeInsets.only(right: 10), // Small space on the right
-              child: TextField(
-                controller: _titleController,
-                textAlign: TextAlign.center, // Align text horizontally at the center
-                textAlignVertical: TextAlignVertical.center, // Align text vertically at the center
-                style: TextStyle(color: Colors.white, fontSize: 18, letterSpacing: -1.5),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal:
-                          8), // Adjust padding for consistent appearance
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 2),
-                    borderRadius: BorderRadius.circular(12),
+          backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: 250, // Keep the width of the input field
+                padding: EdgeInsets.only(right: 10), // Small space on the right
+                child: TextField(
+                  controller: _titleController,
+                  textAlign:
+                      TextAlign.center, // Align text horizontally at the center
+                  textAlignVertical: TextAlignVertical
+                      .center, // Align text vertically at the center
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 18, letterSpacing: -1.5),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal:
+                            8), // Adjust padding for consistent appearance
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey, width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey, width: 3),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: const Color.fromRGBO(20, 18, 24, 1),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey, width: 3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  filled: true,
-                  fillColor: const Color.fromRGBO(20, 18, 24, 1),
+                  maxLines: 1,
+                  textInputAction:
+                      TextInputAction.done,
                 ),
-                maxLines: 1, // Only display 1 line
-                textInputAction:
-                    TextInputAction.done, // Close the keyboard when done
-              ),
-            )
-          ],
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+              )
+            ],
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(
+                  context, true);
+            },
+          )),
       backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
