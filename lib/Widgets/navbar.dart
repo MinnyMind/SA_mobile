@@ -5,17 +5,17 @@ class CustomNavbar extends StatelessWidget {
   final Function(int) onTap;
 
   const CustomNavbar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) {
-        if (index == 0 || index == 1 || index == 2 || index == 3 || index == 4) {
+        if (index == 0 || index == 3) {
           onTap(index);
         }
       },
