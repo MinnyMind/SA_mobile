@@ -128,7 +128,9 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
         Uri.parse("${baseUrl}/api/checkPlaylists").replace(
           queryParameters: {"cosId": cosId},
         ),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
