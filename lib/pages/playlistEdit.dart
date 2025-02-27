@@ -20,6 +20,11 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   List<Map<String, dynamic>> playlists = [];
   String selectedPlaylistId = "";
   bool isLoading = true;
+  final String baseUrl = "http://localhost:7501";
+  // final String baseUrl = "http://150.95.25.61:7501";
+  final String token =
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I";
+  // List<String> imagePaths = [];
 
   @override
   void initState() {
@@ -31,11 +36,16 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   Future<void> fetchPlaylist() async {
     try {
       final response = await http.get(
-        Uri.parse(
-            "http://localhost:7501/api/playlists?user_id=a56aa5dd-330a-4de9-ace1-40c16cc01c0e"),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/playlists").replace(
+          queryParameters: {
+            "play_id": widget.playId,
+          },
+        ),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
       );
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -69,11 +79,16 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   Future<void> fetchPlaylistItems() async {
     try {
       final response = await http.get(
-        Uri.parse(
-            "http://localhost:7501/api/playlistsInfoMobile?user_id=a56aa5dd-330a-4de9-ace1-40c16cc01c0e&play_id=${widget.playId}"),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/playlistsInfoMobile").replace(
+          queryParameters: {
+            "play_id": widget.playId,
+          },
+        ),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
       );
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -89,61 +104,65 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   }
 
   Future<void> editPlaylist() async {
-    if (_titleController.text.isEmpty || selectedPlaylistId.isEmpty) return;
+  if (_titleController.text.isEmpty || selectedPlaylistId.isEmpty) return;
 
-    try {
-      final response = await http.patch(
-        Uri.parse("http://localhost:7501/api/playlists"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "playlistId": selectedPlaylistId,
-          "playlistName": _titleController.text,
-          "playlistDescription": ""
-        }),
-      );
+  try {
+    final response = await http.patch(
+      Uri.parse("${baseUrl}/api/playlists"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json"
+      },
+      body: jsonEncode({
+        "playlistId": selectedPlaylistId,
+        "playlistName": _titleController.text,
+        "playlistDescription": "" // หรือส่งข้อมูล description ที่ต้องการ
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        // ใช้ provider เพื่ออัปเดต playlist
-        final provider = Provider.of<PlaylistProvider>(context, listen: false);
-        int index = provider.playlists.indexWhere(
-            (playlist) => playlist['play_id'] == selectedPlaylistId);
-        if (index != -1) {
-          provider.updatePlaylist(
-              index, _titleController.text); // ส่งชื่อ playlist ที่แก้ไข
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Playlist updated successfully!")),
-        );
-
-        // ไปหน้าก่อนหน้าและให้ข้อมูลถูกอัปเดต
-        Navigator.pop(context);
-      } else {
-        throw Exception("Failed to update playlist");
+    if (response.statusCode == 200) {
+      // ใช้ provider เพื่ออัปเดต playlist
+      final provider = Provider.of<PlaylistProvider>(context, listen: false);
+      int index = provider.playlists.indexWhere(
+          (playlist) => playlist['play_id'] == selectedPlaylistId);
+      if (index != -1) {
+        provider.updatePlaylist(
+            index, _titleController.text); // ส่งชื่อ playlist ที่แก้ไข
       }
-    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error saving playlist")),
+        SnackBar(content: Text("Playlist updated successfully!")),
       );
-    }
-  }
 
-  Future<void> removeCourseFromPlaylist(
-      String playId, String cosId, String userId) async {
+      // ไปหน้าก่อนหน้าและให้ข้อมูลถูกอัปเดต
+      Navigator.pop(context);
+    } else {
+      throw Exception("Failed to update playlist");
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error saving playlist: $e")),
+    );
+  }
+}
+
+
+  Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
     try {
-      if (playId.isEmpty || cosId.isEmpty || userId.isEmpty) {
+      if (playId.isEmpty || cosId.isEmpty) {
         return;
       }
-
       final response = await http.delete(
-        Uri.parse("http://localhost:7501/api/CoursePlayListsEdit"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          'userId': userId,
-          'cosId': cosId,
-          'playId': playId,
-        }),
+        Uri.parse("${baseUrl}/api/CoursePlayListsEdit").replace(
+          queryParameters: {
+            'cosId': cosId,
+            'playId': playId,
+          },
+        ),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
       );
-
       final data = jsonDecode(response.body);
 
       if (data['success'] == true) {
@@ -190,8 +209,7 @@ class _PlaylistEditState extends State<PlaylistEdit> {
                     fillColor: const Color.fromRGBO(20, 18, 24, 1),
                   ),
                   maxLines: 1,
-                  textInputAction:
-                      TextInputAction.done,
+                  textInputAction: TextInputAction.done,
                 ),
               )
             ],
@@ -199,8 +217,7 @@ class _PlaylistEditState extends State<PlaylistEdit> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              Navigator.pop(
-                  context, true);
+              Navigator.pop(context, true);
             },
           )),
       backgroundColor: const Color.fromRGBO(20, 18, 24, 1),
@@ -313,8 +330,8 @@ class _PlaylistEditState extends State<PlaylistEdit> {
             ),
           ),
           IconButton(
-            onPressed: () => removeCourseFromPlaylist(selectedPlaylistId,
-                courseId, "a56aa5dd-330a-4de9-ace1-40c16cc01c0e"),
+            onPressed: () =>
+                removeCourseFromPlaylist(selectedPlaylistId, courseId),
             icon: const Icon(
               Icons.delete,
               color: Colors.white,
