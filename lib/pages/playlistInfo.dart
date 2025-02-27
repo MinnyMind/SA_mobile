@@ -21,6 +21,11 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
       []; // สมมติว่ามี play_id และ play_title
   Map<String, bool> selectedPlaylists = {};
   bool isLoading = true;
+  final String baseUrl = "http://localhost:7501";
+  // final String baseUrl = "http://150.95.25.61:7501";
+  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I";
+  // List<String> imagePaths = [];
+
 
   @override
   void initState() {
@@ -33,24 +38,31 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   Future<void> fetchCourses() async {
     try {
       final response = await http.get(
-        Uri.parse("http://localhost:7501/api/playlistsInfoMobile").replace(
+        Uri.parse("${baseUrl}/api/playlistsInfoMobile").replace(
           queryParameters: {
-            "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
             "play_id": widget.playId,
-            // "play_id": "1190cbdd-c63b-4773-ad75-f1d0c01cdbeb",
           },
         ),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           courses = data['data'] ?? [];
+          //           imagePaths = courses.map((course) {
+          //   final String imageUrl = course['cos_profile']?.toString() ?? '';
+            
+          //   return imageUrl.isNotEmpty && imageUrl.startsWith("http")
+          //       ? 'assets/images/logoSA.png'
+          //       : 'http://150.95.25.61:7501/' + imageUrl;
+          // }).toList();
           isLoading = false;
         });
       }
-      print("Courses: $courses");
+      // print("Courses: $courses");
     } catch (e) {
       print("❌ Error: $e");
       setState(() => isLoading = false);
@@ -60,12 +72,10 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   Future<void> fetchPlaylist() async {
     try {
       final response = await http.get(
-        Uri.parse("http://localhost:7501/api/playlists").replace(
-          queryParameters: {
-            "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
-          },
-        ),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/playlists"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
@@ -87,13 +97,14 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   Future<void> addCourseToPlaylist(
       String playId, Map<String, dynamic> course) async {
     try {
-      print("Adding course to playlist..." + course['cos_id']);
-      print("Adding course to playlist...$playId");
+      // print("Adding course to playlist..." + course['cos_id']);
+      // print("Adding course to playlist...$playId");
       final response = await http.post(
-        Uri.parse("http://localhost:7501/api/addCoursePlayLists"),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/addCoursePlayLists"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
         body: json.encode({
-          "userId": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
           "cosId": course['cos_id'],
           "playId": playId,
         }),
@@ -114,10 +125,12 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
     try {
       final cosId = course['cos_id'];
       final response = await http.get(
-        Uri.parse("http://localhost:7501/api/checkPlaylists").replace(
+        Uri.parse("${baseUrl}/api/checkPlaylists").replace(
           queryParameters: {"cosId": cosId},
         ),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
@@ -135,7 +148,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
               selectedPlaylists[playTitle] =
                   coursePlaylists.contains(playTitle);
             }
-            print(selectedPlaylists);
+            // print(selectedPlaylists);
           });
         }
       }
@@ -147,10 +160,11 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
   Future<void> removeCourseFromPlaylist(String playId, String cosId) async {
     try {
       final response = await http.delete(
-        Uri.parse("http://localhost:7501/api/CoursePlayLists"),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/CoursePlayLists"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
         body: json.encode({
-          "userId": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
           "cosId": cosId,
           "playId": playId
         }),
@@ -219,6 +233,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                             course["cos_profile"].isNotEmpty)
                         ? course["cos_profile"]
                         : "assets/images/logoSA.png",
+                        //  imagePath: imagePaths.isNotEmpty ? imagePaths : [],
                     courseName: course["cos_title"] ?? "Unknown Course",
                     courseDescription:
                         course["cos_subtitle"] ?? "No description available",
@@ -226,6 +241,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                       await fetchCoursePlaylists(course); // โหลดค่าก่อน
                       if (!mounted)
                         return; // ป้องกัน error ถ้า widget ถูก dispose
+                        print("Playlists Data: $playlists");
 
                       showModalBottomSheet(
                         context: context,
@@ -252,8 +268,7 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                                       ),
                                       const SizedBox(height: 10),
                                       ...playlists.map((playlist) {
-                                        final playTitle =
-                                            playlist['play_title'].trim();
+                                        final playTitle = (playlist['play_title'] ?? '').trim();
                                         bool isChecked =
                                             selectedPlaylists[playTitle] ??
                                                 false;

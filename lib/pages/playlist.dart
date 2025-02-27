@@ -15,6 +15,9 @@ class Playlist extends StatefulWidget {
 
 class _PlaylistState extends State<Playlist> {
   bool isLoading = true;
+  final String baseUrl = "http://localhost:7501";
+  final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I";
+  
 
   @override
   void initState() {
@@ -25,12 +28,10 @@ class _PlaylistState extends State<Playlist> {
   Future<void> fetchPlaylist() async {
     try {
       final response = await http.get(
-        Uri.parse("http://localhost:7501/api/playlists").replace(
-          queryParameters: {
-            "user_id": "a56aa5dd-330a-4de9-ace1-40c16cc01c0e",
-          },
-        ),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("${baseUrl}/api/playlists"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"},
       );
 
       if (response.statusCode == 200) {
