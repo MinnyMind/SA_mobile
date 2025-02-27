@@ -5,10 +5,10 @@ class Playlistitem extends StatelessWidget {
   final String playlistName;
 
   const Playlistitem({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.playlistName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class Playlistitem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
+            child: Image.asset(
               imagePath,
               width: 60,
               height: 60,
