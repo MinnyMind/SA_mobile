@@ -19,47 +19,46 @@ class Mylearningitem extends StatelessWidget {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 16,bottom: 16),
+                padding: EdgeInsets.only(left: 16, bottom: 16),
                 child: Text(
                   menu,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white), 
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-           
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: imagePath.map((url) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Image.network(
-                        url,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover, 
-                      ),
-                    );
-                  }).toList(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    children: imagePath.map((url) {
+                      return Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image.network(
+                            url,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ],
           ),
-       
           Positioned(
             right: 0,
             child: TextButton(
-              onPressed: onPressed, 
+              onPressed: onPressed,
               child: const Text(
                 "See all",
-                style:
-                    TextStyle(color: Colors.white,
-                    fontSize: 16), 
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
