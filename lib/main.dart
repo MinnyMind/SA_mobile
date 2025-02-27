@@ -6,9 +6,18 @@ import 'package:spaceship_academy/pages/playlist.dart';
 import 'package:spaceship_academy/pages/playlistEdit.dart';
 import 'package:spaceship_academy/pages/playlistInfo.dart';
 import './pages/allCourse.dart';
+import 'package:spaceship_academy/data/playlistProvider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => PlaylistProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -25,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     PlaylistInfo(playId: ""),
     AllCourse(),
     Playlist(),
-    PlaylistEdit(),
+    PlaylistEdit(playId: ""),
   ];
 
   void _onNavbarTap(int index) {
