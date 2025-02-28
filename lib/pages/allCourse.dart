@@ -16,6 +16,7 @@ class _AllCourseState extends State<AllCourse> {
   final String token =
       "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I"; 
   final String baseUrl = "http://localhost:7501";
+    List<String> imagePaths = [];
 
   @override
   void initState() {
@@ -109,7 +110,8 @@ class _AllCourseState extends State<AllCourse> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: CourseItem(
-                    imageUrl: item["image"] ?? 'assets/images/logoSA.png',
+                    // imageUrl: item["image"] ?? 'assets/images/logoSA.png',
+                    imagePath: imagePaths.isNotEmpty ? imagePaths : [],
                     courseName: item["name"] ?? 'Unnamed Course',
                     courseDescription: item["description"] ?? 'No Description',
                   ),
