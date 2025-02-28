@@ -21,10 +21,10 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
       []; // สมมติว่ามี play_id และ play_title
   Map<String, bool> selectedPlaylists = {};
   bool isLoading = true;
-  final String baseUrl = "http://localhost:7501";
-  // final String baseUrl = "http://150.95.25.61:7501";
+  // final String baseUrl = "http://localhost:7501";
+  final String baseUrl = "http://150.95.25.61:7501";
   final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I";
-  // List<String> imagePaths = [];
+  List<String> imagePaths = [];
 
 
   @override
@@ -50,15 +50,16 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        courses = data['data'] ?? [];
         setState(() {
-          courses = data['data'] ?? [];
-          //           imagePaths = courses.map((course) {
-          //   final String imageUrl = course['cos_profile']?.toString() ?? '';
+          
+                    imagePaths = courses.map((course) {
+            final String imageUrl = course['cos_profile']?.toString() ?? '';
             
-          //   return imageUrl.isNotEmpty && imageUrl.startsWith("http")
-          //       ? 'assets/images/logoSA.png'
-          //       : 'http://150.95.25.61:7501/' + imageUrl;
-          // }).toList();
+            return imageUrl.isNotEmpty && imageUrl.startsWith("http")
+                ? 'assets/images/logoSA.png'
+                : 'http://150.95.25.61:7501/' + imageUrl;
+          }).toList();
           isLoading = false;
         });
       }
@@ -229,11 +230,15 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: CourseItem(
-                    imageUrl: (course["cos_profile"] != null &&
-                            course["cos_profile"].isNotEmpty)
-                        ? course["cos_profile"]
-                        : "assets/images/logoSA.png",
-                        //  imagePath: imagePaths.isNotEmpty ? imagePaths : [],
+                    // imageUrl: (course["cos_profile"] != null &&
+                    //         course["cos_profile"].isNotEmpty)
+                    //     ? course["cos_profile"]
+                    //     : "assets/images/logoSA.png",
+                    imagePath: (course["cos_profile"] != null && course["cos_profile"].isNotEmpty)
+                ? [(course["cos_profile"].startsWith("http") 
+                    ? course["cos_profile"] 
+                    : '$baseUrl/' + course["cos_profile"])]
+                : ["assets/images/logoSA.png"],
                     courseName: course["cos_title"] ?? "Unknown Course",
                     courseDescription:
                         course["cos_subtitle"] ?? "No description available",
