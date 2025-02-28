@@ -20,11 +20,12 @@ class _PlaylistEditState extends State<PlaylistEdit> {
   List<Map<String, dynamic>> playlists = [];
   String selectedPlaylistId = "";
   bool isLoading = true;
-  final String baseUrl = "http://localhost:7501";
-  // final String baseUrl = "http://150.95.25.61:7501";
+  // final String baseUrl = "http://localhost:7501";
+  final String baseUrl = "http://150.95.25.61:7501";
   final String token =
       "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXVfZGV2IiwiZnVwIjoiYTU2YWE1ZGQtMzMwYS00ZGU5LWFjZTEtNDBjMTZjYzAxYzBlIiwidXNlciI6IuC4lOC4uOC4geC4lOC4uOC5i-C4oiDguK3guK3guKXguK3guLDguKPguLLguKfguKciLCJpYXQiOjE3NDAwNjM4NTIsImV4cCI6MTc0MDY2ODY1MiwidHR0X2lkIjoiVFRUMjY1In0.HUC8104Oy9dAWwFyk0kXR1xWgGUap6nMnc_D9eFGS9I";
-  // List<String> imagePaths = [];
+  List<String> imagePaths = [];
+  List courses = [];
 
   @override
   void initState() {
@@ -91,8 +92,19 @@ class _PlaylistEditState extends State<PlaylistEdit> {
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        courses = data['data'] ?? [];
         setState(() {
+
           _playlistItems = List<Map<String, dynamic>>.from(data['data']);
+
+            imagePaths = courses.map((course) {
+            final String imageUrl = course['cos_profile']?.toString() ?? '';
+            
+            return imageUrl.isNotEmpty && imageUrl.startsWith("http")
+                ? 'assets/images/logoSA.png'
+                : 'http://150.95.25.61:7501/' + imageUrl;
+          }).toList();
+
           isLoading = false;
         });
       } else {
@@ -240,7 +252,8 @@ class _PlaylistEditState extends State<PlaylistEdit> {
                                   "No description available",
                               item["cos_profile"] ??
                                   "assets/images/littleGirl.jpg",
-                              item["cos_id"] ?? "", // ส่ง cos_id ไปด้วย
+                              item["cos_id"] ?? "",
+                              index,
                             );
                           },
                         ),
@@ -275,70 +288,68 @@ class _PlaylistEditState extends State<PlaylistEdit> {
     );
   }
 
-  Widget _buildListItem(
-      String name, String description, String imageUrl, String courseId) {
-    String fullImageUrl = imageUrl.startsWith("http")
-        ? imageUrl
-        : "http://localhost:7501/$imageUrl";
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              fullImageUrl,
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  "assets/images/littleGirl.jpg", // Use the default image if loading fails
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
+Widget _buildListItem(
+    String name, String description, String imageUrl, String courseId, int index) {
+  print(imagePaths);
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            (imagePaths.isNotEmpty && imagePaths.length > index && imagePaths[index].isNotEmpty)
+                ? imagePaths[index]
+                : "$baseUrl/assets/images/logoSA.png",  // Use default image if path is empty
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                "assets/images/littleGirl.jpg", // Use fallback image if there's an error
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+              );
+            },
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                  ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () =>
-                removeCourseFromPlaylist(selectedPlaylistId, courseId),
-            icon: const Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
+        ),
+        IconButton(
+          onPressed: () => removeCourseFromPlaylist(selectedPlaylistId, courseId),
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.white,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }
