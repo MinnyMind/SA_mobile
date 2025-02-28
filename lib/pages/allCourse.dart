@@ -114,6 +114,7 @@ class _AllCourseState extends State<AllCourse> {
                     imagePath: imagePaths.isNotEmpty ? imagePaths : [],
                     courseName: item["name"] ?? 'Unnamed Course',
                     courseDescription: item["description"] ?? 'No Description',
+                    onMorePressed: () => _showAddToPlaylistBottomSheet(context),
                   ),
                 );
               },
@@ -121,14 +122,61 @@ class _AllCourseState extends State<AllCourse> {
     );
   }
 
- /// 🔹 ฟังก์ชันสร้างแถวแต่ละอัน
+ /// 🔹 **ฟังก์ชันแสดง Bottom Sheet**
+  void _showAddToPlaylistBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1C1B1F),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 🔹 Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Add to playlist...",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+                        onPressed: () => _showCreatePlaylistDialog(context), // 🎯 เพิ่ม Popup เมื่อกด
+                          // เพิ่มPlaylistใหม่
+                      
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // 🔹 List ของ Playlist
+                  _buildCourseDetail("Programming", setState),
+                  _buildCourseDetail("Marketing", setState),
+                  _buildCourseDetail("Math", setState),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// 🔹 ฟังก์ชันสร้างแถวแต่ละอัน
   Widget _buildCourseDetail(String title, StateSetter setState) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2A292D), // สีเทาเข้มของแถบรายการ
+          color: const Color(0xFF2A292D),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -157,4 +205,107 @@ class _AllCourseState extends State<AllCourse> {
       ),
     );
   }
+}
+
+void _showCreatePlaylistDialog(BuildContext context) {
+  TextEditingController playlistController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: const Color(0xFF1C1B1F),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 🟢 หัวข้อ "Create Playlist" + เส้นแบ่ง
+              const Text(
+                "Create Playlist",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 5),
+              const Divider(color: Colors.white54, thickness: 1), // ✅ เส้นแบ่ง
+
+              // 🟢 ช่องกรอกชื่อ Playlist
+              const SizedBox(height: 10),
+              TextField(
+                controller: playlistController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Enter playlist title",
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: const Color(0xFF2A292D),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Colors.grey, // ✅ เส้นขอบสีเทาอ่อน
+                      width: 1, // ✅ ความหนาของเส้นขอบ
+                    ),
+                  ),
+                ),
+              ),
+
+              // 🟢 ปุ่ม Cancel & Confirm (ขนาดหดลง + จัดตรงกลาง)
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center, // ✅ จัดปุ่มตรงกลาง
+                children: [
+                  SizedBox(
+                    width: 100, // ✅ กำหนดความกว้างปุ่ม Cancel
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.withOpacity(0.2), // ✅ พื้นหลังสีเทาอ่อน
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18), // ✅ ขอบโค้ง
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12), // ✅ ปรับขนาดปุ่ม
+                      ),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(color: Colors.white, fontSize: 14), // ✅ ตัวอักษรสีดำ
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12), // ✅ ระยะห่างระหว่างปุ่ม
+                  SizedBox(
+                    width: 100, // ✅ กำหนดความกว้างปุ่ม Confirm
+                    child: ElevatedButton(
+                      onPressed: () {
+                        String newPlaylist = playlistController.text.trim();
+                        if (newPlaylist.isNotEmpty) {
+                          print("🎵 New Playlist Created: $newPlaylist");
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white, // ✅ พื้นหลังสีขาว
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18), // ✅ ขอบโค้ง
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12), // ✅ ปรับขนาดปุ่ม
+                      ),
+                      child: const Text(
+                        "Confirm",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14), // ✅ ตัวอักษรสีดำ
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
