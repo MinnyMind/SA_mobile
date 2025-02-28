@@ -6,11 +6,11 @@ class Mylearningitem extends StatelessWidget {
   final VoidCallback onPressed;
 
   const Mylearningitem({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.menu,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

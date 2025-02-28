@@ -224,8 +224,9 @@ class _PlaylistInfoState extends State<PlaylistInfo> {
                         course["cos_subtitle"] ?? "No description available",
                     onMorePressed: () async {
                       await fetchCoursePlaylists(course); // โหลดค่าก่อน
-                      if (!mounted)
+                      if (!mounted) {
                         return; // ป้องกัน error ถ้า widget ถูก dispose
+                      }
 
                       showModalBottomSheet(
                         context: context,

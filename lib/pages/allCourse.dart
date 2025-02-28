@@ -50,7 +50,7 @@ class _AllCourseState extends State<AllCourse> {
                   "image": course['cos_profile'] != null
                       ? (course['cos_profile'].toString().startsWith("http")
                           ? course['cos_profile']
-                          : baseUrl + '/' + course['cos_profile'])
+                          : '$baseUrl/' + course['cos_profile'])
                       :  'assets/images/logoSA.png' ,
                 };
               })
